@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .card-box {
+        width: 150px;
+        height: 150px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+      }
+      .cards-cont {
+        display: grid;
+        grid-template-columns: repeat(5, auto);
+        gap: 20px;
+        justify-content: center;
+      }
+
+      .back {
+        transform: rotateY(180deg);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .front {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .card-box {
+        background-color: #0f0;
+      }
+      img {
+        width: 100%;
+      }
+
+      .card-box {
+        position: relative;
+        transform-style: preserve-3d;
+        transition: all 1s 0.1s ease;
+      }
+
+      .front,
+      .back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: grid;
+        justify-content: center;
+        align-content: center;
+        font-weight: bolder;
+        font-size: 30px;
+        color: #fff;
+        border-radius: 6px;
+        backface-visibility: hidden;
+      }
+
+      .back {
+        background-color: #e6d417;
+        transform: rotateY(180deg);
+      }
+
+      .front {
+        background-color: #2792f0;
+      }
+
+      /* .card-box:hover {
+        transform: translateX(100%) rotateY(-180deg);
+      } */
+
+      .rotate {
+        transform: rotateY(-180deg);
+        pointer-events: none;
+      }
+      .true {
+        pointer-events: none;
+      }
+      .info {
+        padding: 20px;
+        text-align: center;
+        border: 2px solid #2792f0;
+        border-radius: 4px;
+        font-size: 25px;
+        font-family: cairo;
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="info">Wrong Tries: <span>0</span></div>
+      <div class="cards-cont"></div>
+    </div>
+    <script>
+      let cardsNum = 20;
+      let possibles = [];
+      let randoms = [];
+      let arr = [];
+      let info = document.querySelector(".info span");
+
+      let images = [
+        "activity-01.png",
+        "activity-02.png",
+        "activity-03.png",
+        "avatar.png",
+        "friend-02.jpg",
+        "friend-04.jpg",
+        "friend-05.jpg",
+        "friend-03.jpg",
+        "skills-01.jpg",
+        "skills-02.jpg",
+      ];
+
+      for (let i = 1; i <= cardsNum; i++) {
+        possibles.push(i);
+      }
+
+      let imgsObj = {};
+      images.forEach((e) => (imgsObj[e] = []));
+
+      for (let i = 0; i < 1000; i++) {
+        let random = Math.floor(Math.random() * cardsNum + 1);
+        if (possibles.includes(random)) {
+          randoms.push(random);
+          possibles.splice(possibles.indexOf(random), 1);
+        }
+      }
+
+      let index = 0;
+      for (let img in imgsObj) {
+        imgsObj[img].push(randoms[index]);
+        index++;
+        imgsObj[img].push(randoms[index]);
+        index++;
+      }
+
+      let cardsCont = document.querySelector(".cards-cont");
+
+      for (let i = 0; i < images.length * 2; i++) {
+        let cardBox = document.createElement("div");
+        cardsCont.append(cardBox);
+        cardBox.classList.add("card-box", "rotate");
+
+        setTimeout(function () {
+          cardBox.classList.remove("rotate");
+        }, 2000);
+
+        let front = document.createElement("div");
+        front.classList.add("front");
+        cardBox.append(front);
+        front.textContent = "test";
+
+        let back = document.createElement("div");
+        back.classList.add("back");
+        cardBox.append(back);
+
+        cardBox.onclick = function () {
+          this.classList.add("rotate");
+          if (cardsCont.querySelectorAll(".rotate").length % 2 == 1) {
+            arr.push(this);
+          }
+          if (cardsCont.querySelectorAll(".rotate").length % 2 == 0) {
+            arr.push(this);
+
+            cardsCont.style.pointerEvents = "none";
+            setTimeout(function () {
+              cardsCont.style.pointerEvents = "auto";
+            }, 1000);
+            arr.reduce((a, b) => {
+              if (a.querySelector("img").src == b.querySelector("img").src) {
+                console.log("True");
+                if (cardsCont.querySelectorAll(".rotate").length == cardsNum) {
+                  alert("You Won");
+                }
+                a.classList.add("true");
+                b.classList.add("true");
+              } else {
+                info.textContent++;
+                setTimeout(function () {
+                  a.classList.remove("rotate");
+                  b.classList.remove("rotate");
+                }, 1000);
+              }
+            });
+            arr = [];
+          }
+          // cardsCont.querySelectorAll(".card-box").forEach((e) => {
+
+          // });
+        };
+
+        for (imgs in imgsObj) {
+          for (index of imgsObj[imgs]) {
+            if (index == Array.from(cardsCont.children).indexOf(cardBox) + 1) {
+              let img = document.createElement("img");
+              img.src = `images/${imgs}`;
+
+              back.append(img);
+            }
+          }
+        }
+      }
+    </script>
+  </body>
+</html>
